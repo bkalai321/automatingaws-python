@@ -25,7 +25,7 @@ def cli():
 
 @cli.command('list-buckets')
 def list_buckets():
-    """List all s3 buckets"""
+    "List all s3 buckets"
     for bucket in s3.buckets.all():
         print(bucket)
 
@@ -41,18 +41,11 @@ def list_buckets_objects(bucket):
 def setup_bucket(bucket):
     """Create and configure s3 bucket"""
 
-    s3_bucket = None
-    try:
-        s3_bucket = s3.create_bucket(
-            Bucket = bucket,
-            CreateBucketConfiguration=
-            {'LocationConstraint': session.region_name}
-        )
-    except ClientError as e:
-        if e.response['Error']['Code'] == 'BucketAlreadyOwnedByYou':
-            s3_bucket = s3.Bucket(bucket)
-        else:
-            raise e
+    s3_bucket = s3.create_bucket(
+        Bucket = bucket,
+        CreateBucketConfiguration=
+        {'LocationConstraint': session.region_name}
+    )
 
     policy = """
     {
@@ -74,7 +67,6 @@ def setup_bucket(bucket):
     pol.put(Policy=policy)
 
     ws = s3_bucket.Website()
-    #
     ws.put(WebsiteConfiguration={
         'ErrorDocument': {
             'Key': 'error.html'
@@ -86,13 +78,6 @@ def setup_bucket(bucket):
 
     return
 
-# @cli.command('sync')
-# @click.argument('pathname', type=click.Path(exists=True))
-# def sync(pathname):
-#     "Sync contents of Pathname to Bucket"
-#     pass
 
-
-
-if __name__ == "__main__":
+if __name__ == "__main__":  
     cli()
